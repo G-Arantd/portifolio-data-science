@@ -1,7 +1,7 @@
 from app import db
 
-class DataFilter(db.Model):
-    __tablename__ = "dashboard"
+class datafilter(db.Model):
+    __tablename__ = "datafilter"
     id: int = db.Column(db.Integer, primary_key=True)
     title: str = db.Column(db.String(200), nullable=False)
     artist: str = db.Column(db.String(200), nullable=False)

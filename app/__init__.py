@@ -12,8 +12,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-from app.models import dashboard
+from app.models.datafilter import *
 
 migrate = Migrate(app, db)
 
-from app.views.home import home
+from app.routes.app_routes import *
