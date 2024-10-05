@@ -12,7 +12,7 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-from app.models.datafilter import *
+from app.models.datafilter import title, rank, date, artist, region, chart, trend, streams
 
 migrate = Migrate(app, db)
 
