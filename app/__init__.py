@@ -2,8 +2,11 @@ from flask import Flask, render_template
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 from flask_cors import CORS
+import os
 
 app = Flask(__name__)
+
+app.secret_key = os.urandom(24)
 
 CORS(app)
 
@@ -12,8 +15,8 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
-from app.models.datafilter import title, rank, date, artist, region, chart, trend, streams
-
 migrate = Migrate(app, db)
 
-from app.routes.app_routes import *
+@app.route("/", methods=["GET"])
+def index():
+    return render_template("index.html")
