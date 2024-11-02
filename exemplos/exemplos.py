@@ -6,8 +6,10 @@ def clean():
     df_filtered = df[["title", "rank", "date", "artist", "region", "streams"]].copy()
     
     df_filtered['date'] = pd.to_datetime(df_filtered['date'])
+
+    countrys = ['Brazil', 'Argentina', 'Mexico', 'Uruguay']
     
-    df_country = df_filtered[(df_filtered["region"] == "Brazil") & (df_filtered["rank"] <= 50)]
+    df_country = df_filtered[(df_filtered["region"].isin(countrys)) & (df_filtered["rank"] <= 50)]
     
     df_country = df_country[df_country['streams'].notna() & (df_country['streams'] != '')]
     
@@ -17,12 +19,12 @@ def clean():
     
     df_country_sorted.to_csv('database_brazil.csv', index=False)
 
-def view_data():
-    df = pd.read_csv("charts.csv")
-    
-    print(df.columns)
-
 clean()
+
+# def view_data():
+#     df = pd.read_csv("charts.csv")
+    
+#     print(df.columns)
 
 # def datas():
 #     df = pd.read_csv("app/database/charts.csv")
