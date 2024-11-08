@@ -2,22 +2,14 @@ import pandas as pd
 
 def clean():
     df = pd.read_csv("charts.csv")
-    
-    df_filtered = df[["title", "rank", "date", "artist", "region", "streams"]].copy()
-    
-    df_filtered['date'] = pd.to_datetime(df_filtered['date'])
-
-    countrys = ['Brazil', 'Argentina', 'Mexico', 'Uruguay']
-    
-    df_country = df_filtered[(df_filtered["region"].isin(countrys)) & (df_filtered["rank"] <= 50)]
-    
-    df_country = df_country[df_country['streams'].notna() & (df_country['streams'] != '')]
-    
-    df_country_sorted = df_country.sort_values(by='date', ascending=True)
-    
-    df_country_sorted = df_country_sorted.drop(columns='rank')
-    
-    df_country_sorted.to_csv('database_brazil.csv', index=False)
+    selected_columns = df[["title", "rank", "date", "artist", "region", "streams"]].copy()
+    selected_columns['date'] = pd.to_datetime(selected_columns['date'])
+    target_countries = ['Brazil', 'Argentina', 'Mexico', 'Uruguay']
+    filtered_df = selected_columns[(selected_columns["region"].isin(target_countries)) & (selected_columns["rank"] <= 50)]
+    filtered_df = filtered_df[filtered_df['streams'].notna() & (filtered_df['streams'] != '')]
+    sorted_df = filtered_df.sort_values(by='date', ascending=True)
+    sorted_df = sorted_df.drop(columns='rank')
+    sorted_df.to_csv('data.csv', index=False)
 
 clean()
 
