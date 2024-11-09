@@ -1,0 +1,48 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <div class="container mt-5">
+        <h2>Gráfico de Streams por Música</h2>
+        <div class="row">
+            <div class="col-md-8 offset-md-2">
+                <canvas id="graficoStreams"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Passar os dados do Flask para o JavaScript
+        const titulos = {{ titulos|tojson }};
+        const streams = {{ streams|tojson }};
+
+        // Configuração do gráfico
+        const ctx = document.getElementById('graficoStreams').getContext('2d');
+        const graficoStreams = new Chart(ctx, {
+            type: 'bar', // Tipo de gráfico: barra
+            data: {
+                labels: titulos, // Eixo X: títulos das músicas
+                datasets: [{
+                    label: 'Streams',
+                    data: streams, // Eixo Y: streams
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Cor das barras
+                    borderColor: 'rgba(75, 192, 192, 1)', // Cor das bordas das barras
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true // Começar o eixo Y do zero
+                    }
+                }
+            }
+        });
+    </script>
+
+{% endblock %}
+
+{% block script %}
+    {# <script src="../../static/charts/charts.js"></script> #}
+{% endblock %}

@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block content %}
+
+    <button id="update-button" class="btn btn-primary">Atualizar Database</button>
+
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th scope="col">ID</th>
+                <th scope="col">Title</th>
+                <th scope="col">Date</th>
+                <th scope="col">Artist</th>
+                <th scope="col">Region</th>
+                <th scope="col">Streams</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for data in datas[:200] %}
+            <tr>
+                <td>{{ data.id }}</td>
+                <td>{{ data.title[:30] }}</td>
+                <td>{{ data.date }}</td>
+                <td>{{ data.artist }}</td>
+                <td>{{ data.region }}</td>
+                <td>{{ data.streams }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+
+{% endblock %}
+
+{% block script %}
+    <script src="../../static//databases/database.js"></script>
+{% endblock %}

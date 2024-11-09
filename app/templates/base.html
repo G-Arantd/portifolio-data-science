@@ -6,6 +6,7 @@
     <title>DataWeb</title>
     <link href="../static/bootstrap/css/bootstrap.css" rel="stylesheet">
     <link href="../static/bootstrap/css/bootstrap-icons.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
 
@@ -18,7 +19,10 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/databases">Databases</a>
+                        <a class="nav-link active" aria-current="page" href="/database/1">Database</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="/charts">Charts</a>
                     </li>
                 </ul>
             </div>
@@ -31,6 +35,7 @@
 
     <script src="../static/bootstrap/js/bootstrap.js"></script>
     <script src="../static/bootstrap/js/bootstrap.bundle.js"></script>
+    {% block script %}{% endblock%}
     
 </body>
 </html>

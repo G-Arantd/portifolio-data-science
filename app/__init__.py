@@ -15,8 +15,12 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 
 db = SQLAlchemy(app)
 
+from app.models import Database
+
 migrate = Migrate(app, db)
 
 @app.route("/", methods=["GET"])
 def index():
     return render_template("index.html")
+
+from app.routes import databases

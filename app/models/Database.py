@@ -1,7 +1,7 @@
 from app import db
 
 class Database(db.Model):
-    __tablename__ = 'database'
+    __tablename__ = 'data'
 
     id: int = db.Column(db.Integer, primary_key=True)
     title: str = db.Column(db.String(255), nullable=False) 
@@ -17,3 +17,5 @@ class Database(db.Model):
         self.region = region
         self.streams = streams
         
+    def __repr__(self):
+        return f"{self.title} - {self.artist} - {self.region} - {self.streams}"
