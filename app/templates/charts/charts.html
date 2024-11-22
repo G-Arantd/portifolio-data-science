@@ -3,30 +3,33 @@
 {% block content %}
 
     <div class="container mt-5">
-        <h2>Gráfico de Streams por Música</h2>
+        <h2>Gráficos Comparativos</h2>
         <div class="row">
-            <div class="col-md-8 offset-md-2">
-                <canvas id="graficoStreams"></canvas>
+            <!-- Primeiro gráfico -->
+            <div class="col-md-6">
+                <canvas id="graficoStreams" width="1400" height="1000"></canvas>
+            </div>
+            <!-- Segundo gráfico -->
+            <div class="col-md-6">
+                <canvas id="graficoComparativo" width="1400" height="1000"></canvas>
             </div>
         </div>
     </div>
 
     <script>
-        // Passar os dados do Flask para o JavaScript
         const titulos = {{ titulos|tojson }};
         const streams = {{ streams|tojson }};
 
-        // Configuração do gráfico
-        const ctx = document.getElementById('graficoStreams').getContext('2d');
-        const graficoStreams = new Chart(ctx, {
-            type: 'bar', // Tipo de gráfico: barra
+        const ctx1 = document.getElementById('graficoStreams').getContext('2d');
+        const graficoStreams = new Chart(ctx1, {
+            type: 'bar',
             data: {
-                labels: titulos, // Eixo X: títulos das músicas
+                labels: titulos,
                 datasets: [{
                     label: 'Streams',
-                    data: streams, // Eixo Y: streams
-                    backgroundColor: 'rgba(75, 192, 192, 0.2)', // Cor das barras
-                    borderColor: 'rgba(75, 192, 192, 1)', // Cor das bordas das barras
+                    data: streams,
+                    backgroundColor: 'rgba(0, 150, 0, 1)',
+                    borderColor: 'rgba(0, 150, 0, 1)',
                     borderWidth: 1
                 }]
             },
@@ -34,7 +37,33 @@
                 responsive: true,
                 scales: {
                     y: {
-                        beginAtZero: true // Começar o eixo Y do zero
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+
+        const titulosAnalise = {{ titulos_analise|tojson }};
+        const streamsAnalise = {{ streams_analise|tojson }};
+
+        const ctx2 = document.getElementById('graficoComparativo').getContext('2d');
+        const graficoComparativo = new Chart(ctx2, {
+            type: 'bar',
+            data: {
+                labels: titulosAnalise,
+                datasets: [{
+                    label: 'Streams',
+                    data: streamsAnalise,
+                    backgroundColor: 'rgba(100, 50, 150, 1)',
+                    borderColor: 'rgba(100, 50, 150, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
                     }
                 }
             }
