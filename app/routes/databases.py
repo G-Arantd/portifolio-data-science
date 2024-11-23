@@ -56,17 +56,10 @@ def charts():
     return render_template('charts/charts.html', titulos=titulos, streams=streams, titulos_analise=titulos_analise, streams_analise=streams_analise)
 
 def prev_top_artist():
-    dados_2017 = get_aggregated_filtered_data('date', '2017', like=True)
-    dados_2018 = get_aggregated_filtered_data('date', '2018', like=True)
-    dados_2019 = get_aggregated_filtered_data('date', '2019', like=True)
-    dados_2020 = get_aggregated_filtered_data('date', '2020', like=True)
-
-    df_2017 = pd.DataFrame(dados_2017)
-    df_2018 = pd.DataFrame(dados_2018)
-    df_2019 = pd.DataFrame(dados_2019)
-    df_2020 = pd.DataFrame(dados_2020)
+    years = ['2017', '2018', '2019', '2020']
+    data_frames = [pd.DataFrame(get_aggregated_filtered_data('date', year, like=True)) for year in years]
     
-    df = pd.concat([df_2017, df_2018, df_2019, df_2020])
+    df = pd.concat(data_frames)
     
     df['date'] = pd.to_datetime(df['date'], format='%Y-%m')
     df['year'] = df['date'].dt.year
@@ -79,7 +72,7 @@ def prev_top_artist():
 
     artist_year_streams['streams_growth'] = artist_year_streams.groupby('artist')['total_streams'].pct_change().fillna(0)
 
-    train_data = artist_year_streams[artist_year_streams['year'] < 2020]
+    train_data = artist_year_streams[artist_year_streams['year'] <= 2020]
     test_data = artist_year_streams[artist_year_streams['year'] == 2020]
 
     X_train = train_data[['year', 'streams_growth', 'rolling_mean']]
