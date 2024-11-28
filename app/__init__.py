@@ -23,4 +23,4 @@ migrate = Migrate(app, db)
 def index():
     return render_template("index.html")
 
-from app.routes import databases
+from app.routes import databases, charts

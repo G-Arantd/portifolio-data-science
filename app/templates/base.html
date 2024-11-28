@@ -19,7 +19,7 @@
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="navbar-nav">
                     <li class="nav-item">
-                        <a class="nav-link active" aria-current="page" href="/database/1">Database</a>
+                        <a class="nav-link active" aria-current="page" href="/database">Database</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link active" aria-current="page" href="/charts">Charts</a>
@@ -29,7 +29,20 @@
         </div>
     </nav>
 
-    <div class="container">
+    <div class="container mt-3">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+          {% if messages %}
+            <div class="container mt-3">
+              {% for category, message in messages %}
+                <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                  {{ message }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+        {% endwith %}
+
         {% block content %}{% endblock %}
     </div>
 

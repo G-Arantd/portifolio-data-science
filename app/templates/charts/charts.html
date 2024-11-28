@@ -21,17 +21,17 @@
     </div>
 
     <script>
-        const titulos = {{ titulos|tojson }};
-        const streams = {{ streams|tojson }};
+        const artists = {{ title_actual|tojson }};
+        const totalStreams = {{ streams_actual|tojson }};
 
         const ctx1 = document.getElementById('graficoStreams').getContext('2d');
         const graficoStreams = new Chart(ctx1, {
             type: 'bar',
             data: {
-                labels: titulos,
+                labels: artists,
                 datasets: [{
                     label: 'Streams',
-                    data: streams,
+                    data: totalStreams,
                     backgroundColor: 'rgba(0, 150, 0, 1)',
                     borderColor: 'rgba(0, 150, 0, 1)',
                     borderWidth: 1
@@ -47,17 +47,17 @@
             }
         });
 
-        const titulosAnalise = {{ titulos_analise|tojson }};
-        const streamsAnalise = {{ streams_analise|tojson }};
+        const titleForecast = {{ title_forecast|tojson }};
+        const streamsForecast = {{ streams_forecast|tojson }};
 
         const ctx2 = document.getElementById('graficoComparativo').getContext('2d');
         const graficoComparativo = new Chart(ctx2, {
             type: 'bar',
             data: {
-                labels: titulosAnalise,
+                labels: titleForecast,
                 datasets: [{
                     label: 'Streams',
-                    data: streamsAnalise,
+                    data: streamsForecast,
                     backgroundColor: 'rgba(100, 50, 150, 1)',
                     borderColor: 'rgba(100, 50, 150, 1)',
                     borderWidth: 1

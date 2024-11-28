@@ -2,60 +2,78 @@ from app import db
 from app.models.Database import Database
 from sqlalchemy.sql import func
 import pandas as pd
+import os
 
-def get_all_data(start, end):
-    return Database.query.slice(start, end).all()
-
-def get_filtered_data(column, value, like=False):
-    if like:
-        return Database.query.filter(getattr(Database, column).like(f'{value}%')).all()
-    return Database.query.filter_by(**{column: value}).all()
-
-def get_aggregated_data(column=None, value=None, like=False):
+def get_datas_charts(year) -> pd.DataFrame:
     query = db.session.query(
-        Database.title,
-        Database.date,
         Database.artist,
         func.sum(Database.streams).label('total_streams')
+    ).filter(
+        Database.date.like(f'{year}%')
+    ).group_by(Database.artist).order_by(
+        func.sum(Database.streams).desc()
     )
-
-    if column and value:
-        if like:
-            query = query.filter(getattr(Database, column).like(f'{value}%'))
-        else:
-            query = query.filter_by(**{column: value})
-
-    query = query.group_by(Database.title, Database.date, Database.artist)
 
     result = query.all()
 
-    result_dicts = [
-        {'title': row[0], 'date': row[1], 'artist': row[2], 'total_streams': row[3]} 
-        for row in result
-    ]
+    df = pd.DataFrame(result, columns=['artist', 'total_streams'])
 
-    expanded_result = []
+    df_expanded = (
+        df.assign(artist=df['artist'].str.split(','))
+        .explode('artist')
+        .assign(artist=lambda x: x['artist'].str.strip())
+        .groupby('artist', as_index=False)['total_streams']
+        .sum()
+        .sort_values(by='total_streams', ascending=False)
+    )
 
-    for record in result_dicts:
-        artists = record['artist'].split(', ')  
-        for artist in artists:
-            expanded_result.append({
-                'title': record['title'],
-                'date': record['date'],
-                'artist': artist,
-                'total_streams': record['total_streams']
-            })
+    return df_expanded
 
-    return expanded_result
+def get_data_analysis(year) -> pd.DataFrame:
+    query = db.session.query(
+        Database.artist,
+        Database.date.label('month'),
+        func.sum(Database.streams).label('total_streams')
+    ).filter(
+        Database.date.like(f'{year}-%')
+    ).group_by(Database.artist, Database.date).order_by(
+        func.sum(Database.streams).desc()
+    )
 
-def get_aggregated_all_data(start, end):
-    data = get_aggregated_data()
-    return data[start:end]
+    result = query.all()
 
-def get_aggregated_filtered_data(column, value, like=False):
-    return get_aggregated_data(column, value, like)
+    df = pd.DataFrame(result, columns=['artist', 'month', 'total_streams'])
 
-def create_data():
+    df_expanded = (
+        df.assign(artist=df['artist'].str.split(','))
+        .explode('artist')
+        .assign(artist=lambda x: x['artist'].str.strip())
+        .groupby(['artist', 'month'], as_index=False)['total_streams'].sum()
+        .sort_values(by=['month', 'total_streams'], ascending=[True, False])
+    )
+
+    df_expanded['monthly_rank'] = df_expanded.groupby('month')['total_streams'].rank(
+        method='dense', ascending=False
+    )
+
+    df_expanded['year'] = pd.to_datetime(df_expanded['month']).dt.year
+
+    rank_annual = (
+        df_expanded.groupby(['artist', 'year'], as_index=False)['total_streams']
+        .sum()
+        .assign(annual_rank=lambda x: x.groupby('year')['total_streams'].rank(
+            method='dense', ascending=False
+        ))
+    )
+
+    df_expanded = pd.merge(
+        df_expanded, rank_annual[['artist', 'year', 'annual_rank']],
+        on=['artist', 'year'], how='left'
+    )
+
+    return df_expanded
+
+def extract_data():
     file_path = 'instance/csv/data.csv'
 
     try:
@@ -77,3 +95,28 @@ def delete_data():
         return {"message": "Todos os dados foram deletados"}, 200
     except Exception as e:
         return {"message": f"Ocorreu um erro: {str(e)}"}, 500
+    
+def clear_data():
+    
+    file_path = "charts.csv"
+    
+    if not os.path.exists(file_path):
+        raise Exception("Arquivo não encontrado")
+
+    df = pd.read_csv(file_path)
+
+    selected_columns = df[["title", "rank", "date", "artist", "region", "streams"]].copy()
+    selected_columns['date'] = pd.to_datetime(selected_columns['date'])
+    
+    target_countries = ['Brazil', 'Argentina', 'Mexico', 'Uruguay']
+    
+    filtered_df = selected_columns[(selected_columns["region"].isin(target_countries)) & (selected_columns["rank"] <= 200)]
+    filtered_df = filtered_df[filtered_df['streams'].notna() & (filtered_df['streams'] != '')]
+    
+    sorted_df = filtered_df.sort_values(by='date', ascending=True)
+    sorted_df = sorted_df.drop(columns='rank')
+    
+    sorted_df.to_csv('instance/csv/data.csv', index=False)
+
+    if os.path.exists('instance/csv/data.csv'):
+        return {"message": "Arquivo foi limpo com sucesso"}
