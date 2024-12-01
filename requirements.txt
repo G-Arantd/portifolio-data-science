@@ -6,3 +6,4 @@ Flask-Cors
 
 # Bibliotecas de Limpeza e Análise de Dados
 pandas
+scikit-learn
